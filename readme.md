@@ -48,3 +48,18 @@ The software is a [reverse-engineered version](https://github.com/vidarh/SAM) of
 Any attempt to contact the company failed. The website was last updated in the year 2009. The status of the original software can therefore best described as Abandonware (http://en.wikipedia.org/wiki/Abandonware)
 
 As long this is the case I cannot put my code under any specific open source software license Use it at your own risk.
+
+
+## Docker
+
+build it
+```bash
+docker build . -t ovos/sam
+```
+
+run it
+```bash
+docker run -p 8080:9666 ovos/sam
+```
+
+use it `http://localhost:8080/synthesize/hello`

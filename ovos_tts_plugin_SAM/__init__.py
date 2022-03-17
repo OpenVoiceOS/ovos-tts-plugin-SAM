@@ -1,8 +1,10 @@
-import subprocess
 import os
-from ovos_utils.log import LOG
-from ovos_plugin_manager.templates.tts import TTS, TTSValidator
+import subprocess
+from distutils.spawn import find_executable
 from os.path import expanduser, isfile
+
+from ovos_plugin_manager.templates.tts import TTS, TTSValidator
+from ovos_utils.log import LOG
 
 
 class SAMTTS(TTS):
@@ -15,11 +17,13 @@ class SAMTTS(TTS):
     Extra-Terrestrial    100        64        150       200
     SAM                   72        64        128       128
     """
+
     def __init__(self, *args, **kwargs):
         self.compile_and_install_software()
         super().__init__(*args, **kwargs, audio_ext="wav",
                          validator=SAMTTSValidator(self))
         self.binary = self.config.get("binary") or \
+                      find_executable("sam") or \
                       expanduser('~/.local/bin/sam')
         if not isfile(self.binary):
             self.compile_and_install_software()
@@ -55,7 +59,7 @@ class SAMTTS(TTS):
             self.throat = self.config.get("throat", 150)
             self.mouth = self.config.get("mouth", 200)
             self.speed = self.config.get("speed", 100)
-        else: # SAM / default
+        else:  # SAM / default
             self.pitch = self.config.get("pitch", 64)
             self.throat = self.config.get("throat", 128)
             self.mouth = self.config.get("mouth", 128)
@@ -68,22 +72,28 @@ class SAMTTS(TTS):
         if os.path.exists(dest_path + 'sam'):
             return  # binary exists no need to build it
         elif not os.path.exists(dest_path):
-            os.mkdir(dest_path)
+            os.makedirs(dest_path, exist_ok=True)
 
-        LOG.info("Fetching SAM source code")
-        # Git clone
-        repo = 'https://github.com/vidarh/SAM'
-        src_path = '/tmp/SAM'
-        subprocess.check_call('git clone {} {}'.format(repo, src_path),
-                              shell=True)
+        try:
+            src_path = '/tmp/SAM'
+            if not os.path.exists(src_path):
+                LOG.info("Fetching SAM")
+                # Git clone
+                repo = 'https://github.com/vidarh/SAM'
+                subprocess.check_call(f'git clone {repo} {src_path}', shell=True)
 
-        LOG.info("Compiling SAM")
-        # compile the software
-        subprocess.check_call("make", cwd=src_path, shell=True)
+            LOG.info("Building SAM")
+            # compile the software
+            subprocess.check_call("make", cwd=src_path, shell=True)
 
-        # install the binary
-        cmd = 'cp {}/sam {}'.format(src_path, dest_path)
-        subprocess.check_call(cmd, cwd=src_path, shell=True)
+            # install the binary
+            cmd = f'cp {src_path}/sam {dest_path}'
+            subprocess.check_call(cmd, cwd=src_path, shell=True)
+        except Exception as e:
+            LOG.exception("FAILED TO COMPILE S.A.M. - https://github.com/vidarh/SAM")
+            LOG.warning("binary missing: ~/.local/bin/sam")
+            return False
+        return True
 
     def get_tts(self, sentence, wav_file, lang=None):
         subprocess.call(
@@ -112,6 +122,7 @@ class SAMTTSValidator(TTSValidator):
 
     def get_tts_class(self):
         return SAMTTS
+
 
 
 if __name__ == "__main__":
