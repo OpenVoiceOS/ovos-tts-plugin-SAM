@@ -124,6 +124,17 @@ class SAMTTSValidator(TTSValidator):
         return SAMTTS
 
 
+SAMTTSPluginConfig = {
+    "en": [
+        {"voice": "SAM", "gender": "male", "display_name": "SAM"},
+        {"voice": "elf", "gender": "neutral", "display_name": "Elf"},
+        {"voice": "little robot", "gender": "neutral", "display_name": "Little Robot"},
+        {"voice": "stuffy guy", "gender": "male", "display_name": "Stuffy Guy"},
+        {"voice": "little old lady", "gender": "female", "display_name": "Little Old Lady"},
+        {"voice": "extra-terrestrial", "gender": "neutral", "display_name": "Extra-Terrestrial"}
+    ]
+}
+
 
 if __name__ == "__main__":
     e = SAMTTS()

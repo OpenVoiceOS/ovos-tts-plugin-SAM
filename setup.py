@@ -3,10 +3,13 @@
 from setuptools import setup
 
 PLUGIN_ENTRY_POINT = 'ovos-tts-plugin-SAM = ovos_tts_plugin_SAM:SAMTTS'
+SAMPLE_CONFIGS = 'ovos-tts-plugin-SAM.config = ' \
+                 'ovos_tts_plugin_SAM:SAMTTSPluginConfig'
+
 
 setup(
     name='ovos-tts-plugin-SAM',
-    version='0.0.1a2',
+    version='0.0.1',
     description='SAM tts plugin for mycroft',
     url='https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM',
     author='JarbasAi',
@@ -34,5 +37,6 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     keywords='mycroft OpenVoiceOS OVOS chatterbox plugin tts',
-    entry_points={'mycroft.plugin.tts': PLUGIN_ENTRY_POINT}
+    entry_points={'mycroft.plugin.tts': PLUGIN_ENTRY_POINT,
+                  'mycroft.plugin.tts.config': SAMPLE_CONFIGS}
 )
