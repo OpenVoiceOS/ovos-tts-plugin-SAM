@@ -136,12 +136,12 @@ class SAMTTSValidator(TTSValidator):
 
 SAMTTSPluginConfig = {
     "en": [
-        {"voice": "SAM", "gender": "male", "display_name": "SAM", "offline": True},
-        {"voice": "elf", "gender": "neutral", "display_name": "Elf", "offline": True},
-        {"voice": "little robot", "gender": "neutral", "display_name": "Little Robot", "offline": True},
-        {"voice": "stuffy guy", "gender": "male", "display_name": "Stuffy Guy", "offline": True},
-        {"voice": "little old lady", "gender": "female", "display_name": "Little Old Lady", "offline": True},
-        {"voice": "extra-terrestrial", "gender": "neutral", "display_name": "Extra-Terrestrial", "offline": True}
+        {"voice": "SAM", "gender": "male", "display_name": "SAM", "offline": True, "priority": 90},
+        {"voice": "elf", "gender": "neutral", "display_name": "Elf", "offline": True, "priority": 91},
+        {"voice": "little robot", "gender": "neutral", "display_name": "Little Robot", "offline": True, "priority": 92},
+        {"voice": "stuffy guy", "gender": "male", "display_name": "Stuffy Guy", "offline": True, "priority": 93},
+        {"voice": "little old lady", "gender": "female", "display_name": "Little Old Lady", "offline": True, "priority": 94},
+        {"voice": "extra-terrestrial", "gender": "neutral", "display_name": "Extra-Terrestrial", "offline": True, "priority": 95}
     ]
 }
 
