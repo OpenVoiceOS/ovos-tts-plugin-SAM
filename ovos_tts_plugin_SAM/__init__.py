@@ -1,9 +1,10 @@
+from os.path import expanduser, isfile
+
 import os
 import subprocess
 from distutils.spawn import find_executable
-from os.path import expanduser, isfile
-
 from ovos_plugin_manager.templates.tts import TTS, TTSValidator
+from ovos_utils import classproperty
 from ovos_utils.log import LOG
 
 
@@ -55,7 +56,7 @@ class SAMTTS(TTS):
             pitch = 72
             throat = 110
             mouth = 105
-            speed =  82
+            speed = 82
         elif voice.lower() == "little old lady":
             pitch = 32
             throat = 145
@@ -120,7 +121,7 @@ class SAMTTS(TTS):
 
         return wav_file, None
 
-    @property
+    @classproperty
     def available_languages(self) -> set:
         """Return languages supported by this TTS implementation in this state
         This property should be overridden by the derived class to advertise
