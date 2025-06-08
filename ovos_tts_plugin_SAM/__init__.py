@@ -122,7 +122,7 @@ class SAMTTS(TTS):
         return wav_file, None
 
     @classproperty
-    def available_languages(self) -> set:
+    def available_languages(cls) -> set:
         """Return languages supported by this TTS implementation in this state
         This property should be overridden by the derived class to advertise
         what languages that engine supports.
