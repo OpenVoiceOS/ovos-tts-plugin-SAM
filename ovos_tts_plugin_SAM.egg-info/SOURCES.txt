@@ -1,0 +1,10 @@
+pyproject.toml
+ovos_tts_plugin_SAM/__init__.py
+ovos_tts_plugin_SAM/version.py
+ovos_tts_plugin_SAM.egg-info/PKG-INFO
+ovos_tts_plugin_SAM.egg-info/SOURCES.txt
+ovos_tts_plugin_SAM.egg-info/dependency_links.txt
+ovos_tts_plugin_SAM.egg-info/entry_points.txt
+ovos_tts_plugin_SAM.egg-info/requires.txt
+ovos_tts_plugin_SAM.egg-info/top_level.txt
+test/test_tts.py

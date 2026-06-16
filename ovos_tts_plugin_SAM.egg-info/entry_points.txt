@@ -1,0 +1,5 @@
+[opm.tts]
+ovos-tts-plugin-SAM = ovos_tts_plugin_SAM:SAMTTS
+
+[opm.tts.config]
+ovos-tts-plugin-SAM.config = ovos_tts_plugin_SAM:SAMTTSPluginConfig
