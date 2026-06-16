@@ -11,3 +11,8 @@ jobs:
     secrets: inherit
     with:
       python_versions: '["3.10", "3.11", "3.12", "3.13", "3.14"]'
+      # SAM is built from source (vidarh/SAM) at runtime via `make`; its default
+      # Makefile links against SDL 1.2 (`sdl-config`), provided by libsdl1.2-dev.
+      system_deps: 'build-essential git libsdl1.2-dev'
+      install_extras: 'test'
+      test_path: 'test'
