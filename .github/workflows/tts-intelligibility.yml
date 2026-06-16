@@ -16,4 +16,4 @@ jobs:
       test_path: 'test/end2end/test_tts_intelligibility.py'
       max_wer: '0.5'
       pre_release: true
-      system_deps: ''
+      system_deps: 'build-essential git libsdl1.2-dev'
