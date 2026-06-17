@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.2a2](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.0.2a2) (2026-06-17)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.0.2a1...0.0.2a2)
+
+**Merged pull requests:**
+
+- test: add TTS intelligibility e2e \(ovoscope\) [\#17](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/pull/17) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.0.2a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.0.2a1) (2026-06-16)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/da36ff02a82ee686e81a134a9cb37d176b3b93f9...0.0.2a1)
