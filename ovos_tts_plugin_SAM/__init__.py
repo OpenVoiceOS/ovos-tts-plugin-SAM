@@ -22,12 +22,17 @@ class SAMTTS(TTS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, audio_ext="wav",
                          validator=SAMTTSValidator(self))
-        self.binary = self.config.get("binary") or \
-                      find_executable("sam") or \
-                      expanduser('~/.local/bin/sam')
-        if not isfile(self.binary):
-            self.compile_and_install_software()
-            self.binary = expanduser('~/.local/bin/sam')
+        # Prefer an explicitly configured binary, then this plugin's own compiled
+        # copy under ~/.local/bin/sam. A bare `sam` found on PATH is only used as a
+        # last resort: on some systems (e.g. GitHub Actions runners) an unrelated
+        # `sam` executable — the AWS SAM CLI — shadows vidarh's S.A.M. synthesiser
+        # and would be invoked with TTS flags it does not understand.
+        own_binary = expanduser('~/.local/bin/sam')
+        self.binary = self.config.get("binary")
+        if not self.binary or not isfile(self.binary):
+            if not isfile(own_binary):
+                self.compile_and_install_software()
+            self.binary = own_binary if isfile(own_binary) else (find_executable("sam") or own_binary)
         self.voice = self.voice or "SAM"
         self.set_voice()
 
