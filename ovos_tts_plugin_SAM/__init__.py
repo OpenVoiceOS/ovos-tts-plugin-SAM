@@ -22,19 +22,39 @@ class SAMTTS(TTS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, audio_ext="wav",
                          validator=SAMTTSValidator(self))
-        # Prefer an explicitly configured binary, then this plugin's own compiled
-        # copy under ~/.local/bin/sam. A bare `sam` found on PATH is only used as a
-        # last resort: on some systems (e.g. GitHub Actions runners) an unrelated
-        # `sam` executable — the AWS SAM CLI — shadows vidarh's S.A.M. synthesiser
-        # and would be invoked with TTS flags it does not understand.
-        own_binary = expanduser('~/.local/bin/sam')
-        self.binary = self.config.get("binary")
-        if not self.binary or not isfile(self.binary):
-            if not isfile(own_binary):
-                self.compile_and_install_software()
-            self.binary = own_binary if isfile(own_binary) else (find_executable("sam") or own_binary)
+        self.binary = self._find_binary()
         self.voice = self.voice or "SAM"
         self.set_voice()
+
+    def _find_binary(self):
+        """Locate the vidarh/SAM binary, building it if needed.
+
+        A bare ``sam`` on PATH cannot be trusted: CI runners (and some user
+        systems) ship the AWS SAM CLI, a Click program that rejects the
+        ``-pitch``/``-throat`` flags this plugin uses. Always validate that the
+        discovered binary speaks the vidarh interface before using it.
+        """
+        configured = self.config.get("binary")
+        candidates = [configured,
+                      find_executable("sam"),
+                      expanduser('~/.local/bin/sam')]
+        for binary in candidates:
+            if binary and isfile(binary) and self._is_vidarh_sam(binary):
+                return binary
+        # nothing usable found, build it from source
+        self.compile_and_install_software()
+        return expanduser('~/.local/bin/sam')
+
+    @staticmethod
+    def _is_vidarh_sam(binary):
+        """Return True if ``binary`` is the vidarh/SAM CLI (not AWS SAM CLI)."""
+        try:
+            proc = subprocess.run([binary], capture_output=True, text=True,
+                                  timeout=10)
+            usage = (proc.stdout or "") + (proc.stderr or "")
+        except Exception:
+            return False
+        return "-pitch" in usage and "-throat" in usage
 
     def set_voice(self, voice=None):
         if voice:
