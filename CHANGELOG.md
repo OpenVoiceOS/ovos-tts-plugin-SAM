@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.0a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.1.0a1) (2026-07-15)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.0.2a2...0.1.0a1)
+
+**Merged pull requests:**
+
+- feat: containerize SAM behind ovos-tts-server [\#24](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/pull/24) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.0.2a2](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.0.2a2) (2026-06-17)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.0.2a1...0.0.2a2)
