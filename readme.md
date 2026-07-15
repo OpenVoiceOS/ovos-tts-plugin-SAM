@@ -52,14 +52,27 @@ As long this is the case I cannot put my code under any specific open source sof
 
 ## Docker
 
-build it
+SAM is served behind [ovos-tts-server](https://github.com/OpenVoiceOS/ovos-tts-server)
+(ElevenLabs-compatible API) on port `9666`. The image is fully offline — the retro
+`sam` binary is built into it, and there is no cloud dependency or model download.
+
+Pull the prebuilt image:
 ```bash
-docker build . -t ovos/sam
+docker run -p 9666:9666 ghcr.io/openvoiceos/ovos-tts-plugin-sam:dev
 ```
 
-run it
+…or build locally:
 ```bash
-docker run -p 8080:9666 ovos/sam
+docker build -t ovos-tts-plugin-sam .
+docker run -p 9666:9666 ovos-tts-plugin-sam
 ```
 
-use it `http://localhost:8080/synthesize/hello`
+…or use `docker compose up`.
+
+Synthesize: `http://localhost:9666/synthesize/hello`
+
+The default voice is `SAM`. Pick another at build time
+(`SAM`, `elf`, `little robot`, `stuffy guy`, `little old lady`, `extra-terrestrial`):
+```bash
+docker build --build-arg SAM_VOICE="stuffy guy" -t ovos-tts-plugin-sam .
+```
