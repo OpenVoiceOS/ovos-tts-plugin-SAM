@@ -1,9 +1,10 @@
+from os.path import expanduser, isfile
+
 import os
 import subprocess
 from distutils.spawn import find_executable
-from os.path import expanduser, isfile
-
 from ovos_plugin_manager.templates.tts import TTS, TTSValidator
+from ovos_utils import classproperty
 from ovos_utils.log import LOG
 
 
@@ -19,51 +20,79 @@ class SAMTTS(TTS):
     """
 
     def __init__(self, *args, **kwargs):
-        self.compile_and_install_software()
         super().__init__(*args, **kwargs, audio_ext="wav",
                          validator=SAMTTSValidator(self))
-        self.binary = self.config.get("binary") or \
-                      find_executable("sam") or \
-                      expanduser('~/.local/bin/sam')
-        if not isfile(self.binary):
-            self.compile_and_install_software()
-            self.binary = expanduser('~/.local/bin/sam')
+        self.binary = self._find_binary()
         self.voice = self.voice or "SAM"
         self.set_voice()
+
+    def _find_binary(self):
+        """Locate the vidarh/SAM binary, building it if needed.
+
+        A bare ``sam`` on PATH cannot be trusted: CI runners (and some user
+        systems) ship the AWS SAM CLI, a Click program that rejects the
+        ``-pitch``/``-throat`` flags this plugin uses. Always validate that the
+        discovered binary speaks the vidarh interface before using it.
+        """
+        configured = self.config.get("binary")
+        candidates = [configured,
+                      find_executable("sam"),
+                      expanduser('~/.local/bin/sam')]
+        for binary in candidates:
+            if binary and isfile(binary) and self._is_vidarh_sam(binary):
+                return binary
+        # nothing usable found, build it from source
+        self.compile_and_install_software()
+        return expanduser('~/.local/bin/sam')
+
+    @staticmethod
+    def _is_vidarh_sam(binary):
+        """Return True if ``binary`` is the vidarh/SAM CLI (not AWS SAM CLI)."""
+        try:
+            proc = subprocess.run([binary], capture_output=True, text=True,
+                                  timeout=10)
+            usage = (proc.stdout or "") + (proc.stderr or "")
+        except Exception:
+            return False
+        return "-pitch" in usage and "-throat" in usage
 
     def set_voice(self, voice=None):
         if voice:
             self.voice = voice
-        if self.voice.lower() == "elf":
-            self.pitch = self.config.get("pitch", 64)
-            self.throat = self.config.get("throat", 110)
-            self.mouth = self.config.get("mouth", 160)
-            self.speed = self.config.get("speed", 72)
-        elif self.voice.lower() == "little robot":
-            self.pitch = self.config.get("pitch", 60)
-            self.throat = self.config.get("throat", 190)
-            self.mouth = self.config.get("mouth", 190)
-            self.speed = self.config.get("speed", 92)
-        elif self.voice.lower() == "stuffy guy":
-            self.pitch = self.config.get("pitch", 72)
-            self.throat = self.config.get("throat", 110)
-            self.mouth = self.config.get("mouth", 105)
-            self.speed = self.config.get("speed", 82)
-        elif self.voice.lower() == "little old lady":
-            self.pitch = self.config.get("pitch", 32)
-            self.throat = self.config.get("throat", 145)
-            self.mouth = self.config.get("mouth", 145)
-            self.speed = self.config.get("speed", 82)
-        elif self.voice.lower() == "extra-terrestrial":
-            self.pitch = self.config.get("pitch", 64)
-            self.throat = self.config.get("throat", 150)
-            self.mouth = self.config.get("mouth", 200)
-            self.speed = self.config.get("speed", 100)
-        else:  # SAM / default
-            self.pitch = self.config.get("pitch", 64)
-            self.throat = self.config.get("throat", 128)
-            self.mouth = self.config.get("mouth", 128)
-            self.speed = self.config.get("speed", 72)
+        self.pitch, self.throat, self.mouth, self.speed = self.get_voice_params(self.voice)
+
+    @staticmethod
+    def get_voice_params(voice):
+        pitch = 64
+        throat = 128
+        mouth = 128
+        speed = 72
+        if voice.lower() == "elf":
+            pitch = 64
+            throat = 110
+            mouth = 160
+            speed = 72
+        elif voice.lower() == "little robot":
+            pitch = 60
+            throat = 190
+            mouth = 190
+            speed = 92
+        elif voice.lower() == "stuffy guy":
+            pitch = 72
+            throat = 110
+            mouth = 105
+            speed = 82
+        elif voice.lower() == "little old lady":
+            pitch = 32
+            throat = 145
+            mouth = 145
+            speed = 82
+        elif voice.lower() == "extra-terrestrial":
+            pitch = 64
+            throat = 150
+            mouth = 200
+            speed = 100
+        return pitch, throat, mouth, speed
 
     @staticmethod
     def compile_and_install_software():
@@ -90,22 +119,42 @@ class SAMTTS(TTS):
             cmd = f'cp {src_path}/sam {dest_path}'
             subprocess.check_call(cmd, cwd=src_path, shell=True)
         except Exception as e:
-            LOG.exception("FAILED TO COMPILE S.A.M. - https://github.com/vidarh/SAM")
+            LOG.error("FAILED TO COMPILE S.A.M. - https://github.com/vidarh/SAM")
             LOG.warning("binary missing: ~/.local/bin/sam")
-            return False
+            raise
         return True
 
-    def get_tts(self, sentence, wav_file, lang=None):
+    def get_tts(self, sentence, wav_file, lang=None, voice=None,
+                pitch=None, speed=None, mouth=None, throat=None):
+        if lang and not lang.lower().startswith("en"):
+            raise KeyError("only english is supported")
+        if voice:
+            # TODO validate voice is valid
+            pitch2, throat2, mouth2, speed2 = self.get_voice_params(voice)
+            pitch = pitch or pitch2
+            throat = throat or throat2
+            mouth = mouth or mouth2
+            speed = speed or speed2
         subprocess.call(
             [self.binary,
-             "-pitch", str(self.pitch),
-             "-speed", str(self.speed),
-             "-mouth", str(self.mouth),
-             "-throat", str(self.throat),
+             "-pitch", str(pitch or self.pitch),
+             "-speed", str(speed or self.speed),
+             "-mouth", str(mouth or self.mouth),
+             "-throat", str(throat or self.throat),
              "-wav", wav_file,
              sentence])
 
         return wav_file, None
+
+    @classproperty
+    def available_languages(cls) -> set:
+        """Return languages supported by this TTS implementation in this state
+        This property should be overridden by the derived class to advertise
+        what languages that engine supports.
+        Returns:
+            set: supported languages
+        """
+        return set(SAMTTSPluginConfig.keys())
 
 
 class SAMTTSValidator(TTSValidator):
@@ -124,9 +173,25 @@ class SAMTTSValidator(TTSValidator):
         return SAMTTS
 
 
+SAMTTSPluginConfig = {
+    "en": [
+        {"voice": "SAM",
+         "meta": {"gender": "male", "display_name": "SAM", "offline": True, "priority": 90}},
+        {"voice": "elf",
+         "meta": {"gender": "neutral", "display_name": "Elf", "offline": True, "priority": 91}},
+        {"voice": "little robot",
+         "meta": {"gender": "neutral", "display_name": "Little Robot", "offline": True, "priority": 92}},
+        {"voice": "stuffy guy",
+         "meta": {"gender": "male", "display_name": "Stuffy Guy", "offline": True, "priority": 93}},
+        {"voice": "little old lady",
+         "meta": {"gender": "female", "display_name": "Little Old Lady", "offline": True, "priority": 94}},
+        {"voice": "extra-terrestrial",
+         "meta": {"gender": "neutral", "display_name": "Extra-Terrestrial", "offline": True, "priority": 95}}
+    ]
+}
 
 if __name__ == "__main__":
     e = SAMTTS()
     e.set_voice("elf")
     ssml = """Hello world"""
-    e.get_tts(ssml, "sam.wav")
+    e.get_tts(ssml, "sam.wav", voice="extra-terrestrial")
