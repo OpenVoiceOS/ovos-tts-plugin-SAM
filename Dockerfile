@@ -6,7 +6,7 @@
 #
 # SAM is a tiny C program; there is no cloud dependency and no model download, so
 # the container needs no network access at runtime.
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 # build-essential + libsdl1.2-dev: compile the vidarh/SAM binary from source.
 # git: fetch the SAM sources.
