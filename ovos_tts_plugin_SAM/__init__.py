@@ -59,9 +59,25 @@ class SAMTTS(TTS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, audio_ext="wav",
                          validator=SAMTTSValidator(self))
-        self.binary = self._find_binary()
+        # The binary is resolved at the first synthesis, not here. The plugin
+        # manager constructs the class before it calls validator.validate(),
+        # so a build that fails in __init__ hides the language rejection: a
+        # caller asking for a language SAM does not speak saw a make error
+        # instead of the validator's message.
+        self._binary = None
         self.voice = self.voice or "SAM"
         self.set_voice()
+
+    @property
+    def binary(self):
+        """Path of the vidarh/SAM binary, found or built at first use."""
+        if self._binary is None:
+            self._binary = self._find_binary()
+        return self._binary
+
+    @binary.setter
+    def binary(self, value):
+        self._binary = value
 
     def _find_binary(self):
         """Locate the vidarh/SAM binary, building it if needed.
