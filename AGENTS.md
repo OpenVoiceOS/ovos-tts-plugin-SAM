@@ -32,7 +32,6 @@ None configured.
 
 ## Gotchas
 - `setup.py` version is `0.0.1` and `install_requires=['ovos-plugin-manager>=0.0.1a12']`, while `requirements.txt` pins `ovos-plugin-manager>=2.1.0,<2.2.0`. The two disagree — the runtime/CI uses the requirements pin.
-- `from distutils.spawn import find_executable` — `distutils` is removed in Python 3.12+, yet `build_tests.yml` runs on Python 3.14. Import will fail on modern Python.
 - Network + compiler side effects at construction time (git clone + `make`) make the engine non-hermetic; first run needs git, make, and a C toolchain.
 - Custom Docker/dev2master workflows are bespoke, not the standard gh-automations set.
 - License is intentionally unspecified (upstream SAM is abandonware); `setup.py` still declares `Apache-2.0`.
