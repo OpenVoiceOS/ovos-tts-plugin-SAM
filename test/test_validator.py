@@ -63,14 +63,13 @@ class TestValidateLang(unittest.TestCase):
 class TestGetTTSRejectsNonEnglish(unittest.TestCase):
     """The synthesis path answers with the same type as the validator.
 
-    `get_tts` raised `KeyError` for the same condition, so a caller that
-    wanted to handle an unsupported language had to catch a pair of types for
-    one condition, and read a message rendered with quotes around it.
+    One condition answers with one type, so a caller that handles an
+    unsupported language catches `ValueError` alone and reads a message with no
+    quotes rendered into it.
 
-    The two sites do not share a predicate: the validator reads
-    `lang.split("-")[0].lower().strip()`, and `get_tts` reads
-    `lang.lower().startswith("en")`. That disagreement is older than this
-    change and is filed on its own. These tests use tags both sites agree on.
+    Which tags the two sites refuse is a separate constraint, held in
+    `test_lang_predicate.py`. These tests use `pt-PT`, which both sites refuse,
+    so they measure the type and not the predicate.
     """
 
     def test_a_non_english_language_raises_valueerror(self):

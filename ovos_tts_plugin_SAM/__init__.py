@@ -1,11 +1,48 @@
 from os.path import expanduser, isfile
 
 import os
+import re
 import subprocess
 from distutils.spawn import find_executable
 from ovos_plugin_manager.templates.tts import TTS, TTSValidator
 from ovos_utils import classproperty
 from ovos_utils.log import LOG
+
+
+_PRIMARY_SUBTAG = re.compile(r"[-_]")
+
+#: The primary subtags this plugin answers to. "en" is the BCP-47 code the
+#: plugin advertises in SAMTTSPluginConfig. "eng" is the ISO 639-2/639-3 code
+#: for the same language, and a caller that uses it means English.
+_ENGLISH_SUBTAGS = frozenset(("en", "eng"))
+
+
+def is_english(lang) -> bool:
+    """Return True if ``lang`` names English.
+
+    One question, one answer, for every site that asks it. The validator and
+    ``get_tts`` both call this, so a tag cannot pass the language gate at load
+    and then be refused at synthesis.
+
+    The primary subtag decides: cut ``lang`` at the first ``"-"`` or ``"_"``,
+    strip the whitespace on both sides of the cut, fold the case, and compare
+    against :data:`_ENGLISH_SUBTAGS`. So all of ``"en"``, ``"en-US"``,
+    ``"en_US"``, ``"EN-gb"``, ``"eng"``, ``" en-AU "`` and ``"en -US"`` name
+    English.
+
+    A prefix is not enough. Every string that begins with ``en`` and is not a
+    code is refused: ``"english"``, ``"ENGLISH-x"``, ``"enx"``, ``"en1"``, and a
+    tag written with an en dash in place of the hyphen are all outside the
+    separator rule above.
+
+    A non-string, including ``None``, is not a tag and returns False. Each call
+    site tests ``lang`` for a value before it asks, and keeps its own behaviour
+    for a missing one.
+    """
+    if not isinstance(lang, str):
+        return False
+    primary = _PRIMARY_SUBTAG.split(lang.strip(), maxsplit=1)[0]
+    return primary.strip().lower() in _ENGLISH_SUBTAGS
 
 
 class SAMTTS(TTS):
@@ -126,12 +163,10 @@ class SAMTTS(TTS):
 
     def get_tts(self, sentence, wav_file, lang=None, voice=None,
                 pitch=None, speed=None, mouth=None, throat=None):
-        if lang and not lang.lower().startswith("en"):
-            # ValueError, the same type the validator raises for the same
-            # condition. KeyError said a mapping key was missing, which is not
-            # what happened, and it renders its message with quotes embedded.
-            # One condition now answers with one type, so a caller does not
-            # have to catch a pair.
+        if lang and not is_english(lang):
+            # ValueError, the type the validator raises for this condition. One
+            # condition answers with one type, so a caller catches one type,
+            # and the message carries no quotes rendered into it.
             raise ValueError("only english is supported")
         if voice:
             # TODO validate voice is valid
@@ -167,12 +202,10 @@ class SAMTTSValidator(TTSValidator):
         super(SAMTTSValidator, self).__init__(tts)
 
     def validate_lang(self):
-        lang = self.tts.lang.split("-")[0].lower().strip()
-        if lang != "en":
-            # ValueError, not a bare Exception: a caller that wants to handle
-            # an unsupported language had to catch Exception, which also
-            # swallows every programming error in the same block. The value it
-            # was given is wrong, which is what ValueError says.
+        if not is_english(self.tts.lang):
+            # ValueError, not a bare Exception: the value is wrong, which is
+            # what ValueError says, and a caller can catch it without also
+            # swallowing every programming error in the same block.
             raise ValueError('SAMTTS only supports english')
 
     def validate_connection(self):
