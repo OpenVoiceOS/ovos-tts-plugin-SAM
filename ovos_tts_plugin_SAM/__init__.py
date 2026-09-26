@@ -127,7 +127,12 @@ class SAMTTS(TTS):
     def get_tts(self, sentence, wav_file, lang=None, voice=None,
                 pitch=None, speed=None, mouth=None, throat=None):
         if lang and not lang.lower().startswith("en"):
-            raise KeyError("only english is supported")
+            # ValueError, the same type the validator raises for the same
+            # condition. KeyError said a mapping key was missing, which is not
+            # what happened, and it renders its message with quotes embedded.
+            # One condition now answers with one type, so a caller does not
+            # have to catch a pair.
+            raise ValueError("only english is supported")
         if voice:
             # TODO validate voice is valid
             pitch2, throat2, mouth2, speed2 = self.get_voice_params(voice)
@@ -164,7 +169,11 @@ class SAMTTSValidator(TTSValidator):
     def validate_lang(self):
         lang = self.tts.lang.split("-")[0].lower().strip()
         if lang != "en":
-            raise Exception('SAMTTS only supports english')
+            # ValueError, not a bare Exception: a caller that wants to handle
+            # an unsupported language had to catch Exception, which also
+            # swallows every programming error in the same block. The value it
+            # was given is wrong, which is what ValueError says.
+            raise ValueError('SAMTTS only supports english')
 
     def validate_connection(self):
         pass

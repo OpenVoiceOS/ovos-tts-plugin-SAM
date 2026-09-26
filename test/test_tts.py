@@ -46,8 +46,10 @@ class TestSAMTTS(unittest.TestCase):
             self.assertGreater(f.getframerate(), 0)
 
     def test_non_english_raises(self):
+        # ValueError since the type change: the validator already raised it for
+        # the same condition, and one condition answers with one type
         path = os.path.join(tempfile.mkdtemp(), "sam_pt.wav")
-        with self.assertRaises(KeyError):
+        with self.assertRaises(ValueError):
             self.tts.get_tts("ola mundo", path, lang="pt-pt")
 
 
