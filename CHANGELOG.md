@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.3a2](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.1.3a2) (2026-09-26)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.1.3a1...0.1.3a2)
+
+**Merged pull requests:**
+
+- Update docker/login-action action to v4 [\#26](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/pull/26) ([renovate[bot]](https://github.com/apps/renovate))
+- Update dependency python [\#20](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/pull/20) ([renovate[bot]](https://github.com/apps/renovate))
+
 ## [0.1.3a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.1.3a1) (2026-09-26)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.1.2a1...0.1.3a1)
@@ -7,7 +16,6 @@
 **Merged pull requests:**
 
 - fix: resolve the SAM binary at first use, not in \_\_init\_\_ [\#33](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/pull/33) ([openvoiceos-bot](https://github.com/openvoiceos-bot))
-- Update dependency python [\#20](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/pull/20) ([renovate[bot]](https://github.com/apps/renovate))
 
 ## [0.1.2a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.1.2a1) (2026-09-26)
 
