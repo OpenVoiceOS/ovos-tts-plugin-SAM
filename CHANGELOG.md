@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.1.2a1) (2026-09-26)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.1.1a1...0.1.2a1)
+
+**Merged pull requests:**
+
+- fix: one language predicate for the validator and get\_tts [\#36](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/pull/36) ([openvoiceos-bot](https://github.com/openvoiceos-bot))
+
 ## [0.1.1a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.1.1a1) (2026-09-26)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.1.0a2...0.1.1a1)
