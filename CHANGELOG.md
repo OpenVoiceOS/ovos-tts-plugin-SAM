@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.1.1a1) (2026-09-26)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.1.0a2...0.1.1a1)
+
+**Merged pull requests:**
+
+- fix: one type for the unsupported-language condition [\#32](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/pull/32) ([openvoiceos-bot](https://github.com/openvoiceos-bot))
+
 ## [0.1.0a2](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.1.0a2) (2026-08-01)
 
 [Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.1.0a1...0.1.0a2)
