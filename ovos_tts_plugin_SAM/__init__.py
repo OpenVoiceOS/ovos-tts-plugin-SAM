@@ -2,8 +2,8 @@ from os.path import expanduser, isfile
 
 import os
 import re
+import shutil
 import subprocess
-from distutils.spawn import find_executable
 from ovos_plugin_manager.templates.tts import TTS, TTSValidator
 from ovos_utils import classproperty
 from ovos_utils.log import LOG
@@ -89,7 +89,7 @@ class SAMTTS(TTS):
         """
         configured = self.config.get("binary")
         candidates = [configured,
-                      find_executable("sam"),
+                      shutil.which("sam"),
                       expanduser('~/.local/bin/sam')]
         for binary in candidates:
             if binary and isfile(binary) and self._is_vidarh_sam(binary):
