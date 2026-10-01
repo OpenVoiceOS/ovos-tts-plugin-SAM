@@ -1,8 +1,20 @@
 # Changelog
 
+## [0.1.4a1](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.1.4a1) (2026-10-01)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.1.3a3...0.1.4a1)
+
+**Merged pull requests:**
+
+- fix: find the binary with shutil.which, not distutils [\#35](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/pull/35) ([openvoiceos-bot](https://github.com/openvoiceos-bot))
+
 ## [0.1.3a3](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.1.3a3) (2026-09-26)
 
-[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.1.3a1...0.1.3a3)
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.1.3a2...0.1.3a3)
+
+## [0.1.3a2](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/tree/0.1.3a2) (2026-09-26)
+
+[Full Changelog](https://github.com/OpenVoiceOS/ovos-tts-plugin-SAM/compare/0.1.3a1...0.1.3a2)
 
 **Merged pull requests:**
 
